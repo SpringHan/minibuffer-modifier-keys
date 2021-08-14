@@ -1,6 +1,6 @@
 * Minibuffer Keypad Mode
   Minibuffer keypad mode is a package that allows you to avoid Ctrl, Meta in Emacs minibuffers.
-  [[file:./demo.gif][Screenshot]]
+  [[file:./demo.gif]]
 ** Installation
    You can install it in the following way:
    #+begin_src emacs-lisp
@@ -15,6 +15,6 @@
    When you press SPC in twice time, you can open or close keypad mode.
 
    In the keypad mode, the character you input will be dotted with prefix. They can be ~C-~ , ~M-~ or ~C-M-~ .
-   You can use ~,~ (for ~C-~), ~.~ (for ~M-~) and ~/~ (for ~C-M-~) to change the current prefix if the prefix you input is not equal to current prefix.
+   You can use ~,~  (for ~C-~), ~.~ (for ~M-~) and ~/~ (for ~C-M-~) to change the current prefix if the prefix you input is not equal to current prefix.
 ** License
    GPL-3.0
