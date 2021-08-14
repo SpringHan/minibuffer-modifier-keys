@@ -1,5 +1,6 @@
 * Minibuffer Keypad Mode
   Minibuffer keypad mode is a package that allows you to avoid Ctrl, Meta in Emacs minibuffers.
+  [[file:./demo.gif][Screenshot]]
 ** Installation
    You can install it in the following way:
    #+begin_src emacs-lisp
