@@ -174,9 +174,8 @@ EXTERNAL-CHAR is the entrance for minibuffer-keypad mode."
         (if (and minibuffer-keypad-mode-on
                  (memq char '(44 46 47)))
             (progn
-              (setq-local minibuffer-keypad-mode-prefix
-                          (minibuffer-keypad-mode--convert-prefix char))
-              (call-interactively (key-binding (read-kbd-macro (char-to-string 127)))))
+              (call-interactively (key-binding (read-kbd-macro (char-to-string 127))))
+              (minibuffer-keypad-mode-keypad char))
           (minibuffer-keypad-mode-self-insert))))))
 
 (defun minibuffer-keypad-mode-self-insert ()
