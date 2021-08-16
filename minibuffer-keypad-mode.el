@@ -39,24 +39,9 @@
   :type 'keymap
   :group 'minibuffer-keypad-mode)
 
-(defcustom minibuffer-keypad-mode-on nil
-  "If the minibuffer-keypad mode is opened."
-  :type 'boolean
-  :group 'minibuffer-keypad-mode)
-
 (defcustom minibuffer-keypad-mode-prefix "C-"
   "The prefix for minibuffer-keypad."
   :type 'string
-  :group 'minibuffer-keypad-mode)
-
-(defcustom minibuffer-keypad-mode-first-start t
-  "If this is the first time to start minibuffer."
-  :type 'boolean
-  :group 'minibuffer-keypad-mode)
-
-(defcustom minibuffer-keypad-mode-open-timer nil
-  "The timer for opening minibuffer-keypad at the first time to start it."
-  :type 'timer
   :group 'minibuffer-keypad-mode)
 
 ;;;###autoload
@@ -70,10 +55,10 @@ Enable the mode when ENABLE is non-nil."
   (if enable
       (add-hook 'minibuffer-setup-hook
                 (lambda ()
-                  (minibuffer-keypad-mode t)))
+                  (define-key (current-local-map) (kbd "SPC") #'minibuffer-keypad-mode-start-or-stop)))
     (remove-hook 'minibuffer-setup-hook
                  (lambda ()
-                   (minibuffer-keypad-mode t)))))
+                   (define-key (current-local-map) (kbd "SPC") #'minibuffer-keypad-mode-start-or-stop)))))
 
 (defun minibuffer-keypad-mode--index (ele list)
   "Get the index of ELE in LIST."
@@ -97,11 +82,13 @@ Enable the mode when ENABLE is non-nil."
     (when index
       (nth index to))))
 
-(defun minibuffer-keypad-mode-keypad (external-char)
+(defun minibuffer-keypad-mode-keypad (external-char &optional no-convert)
   "Execute the keypad command.
-EXTERNAL-CHAR is the entrance for minibuffer-keypad mode."
+EXTERNAL-CHAR is the entrance for minibuffer-keypad mode.
+NO-CONVERT means not to convert the EXTERNAL-CHAR to prefix."
   (interactive)
-  (let ((key (when (and (memq external-char '(44 46 47))
+  (let ((key (when (and (null no-convert)
+                        (memq external-char '(44 46 47))
                         (/= (minibuffer-keypad-mode--convert-prefix
                              minibuffer-keypad-mode-prefix)
                             external-char))
@@ -156,32 +143,26 @@ EXTERNAL-CHAR is the entrance for minibuffer-keypad mode."
       (if (and (= (char-before) 32)
                (not (= (point) (line-beginning-position))))
           (progn
-            (setq-local minibuffer-keypad-mode-on
-                        (if minibuffer-keypad-mode-on
-                            nil
-                          t))
+            (minibuffer-keypad-mode)
             (call-interactively (key-binding (read-kbd-macro (char-to-string 127)))))
         (self-insert-command 1 32))
     (self-insert-command 1 32)
     (let ((char (read-char)))
       (if (= 32 char)
           (progn
-            (setq-local minibuffer-keypad-mode-on
-                        (if minibuffer-keypad-mode-on
-                            nil
-                          t))
+            (minibuffer-keypad-mode)
             (call-interactively (key-binding (read-kbd-macro (char-to-string 127)))))
-        (if (and minibuffer-keypad-mode-on
+        (if (and minibuffer-keypad-mode
                  (memq char '(44 46 47)))
             (progn
               (call-interactively (key-binding (read-kbd-macro (char-to-string 127))))
-              (minibuffer-keypad-mode-keypad char))
+              (minibuffer-keypad-mode-keypad char t))
           (minibuffer-keypad-mode-self-insert))))))
 
 (defun minibuffer-keypad-mode-self-insert ()
   "The function to insert the input key or execute the function."
   (interactive)
-  (if minibuffer-keypad-mode-on
+  (if minibuffer-keypad-mode
       (minibuffer-keypad-mode-keypad last-input-event)
     (if (or (symbolp last-input-event)
             (< last-input-event 33)
