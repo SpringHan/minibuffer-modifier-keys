@@ -17,7 +17,7 @@
    In the keypad mode, the character you input will be dotted with prefix. They can be ~C-~ , ~M-~ or ~C-M-~ .
    You can use ~comma~ (,)  (for ~C-~ ), ~.~ (for ~M-~ ) and ~/~ (for ~C-M-~ ) to change the current prefix if the prefix you input is not equal to current prefix.
 
-   You can also use keypad to execute the commands that needs many key with normal self-insert key or the ~,~ ~.~ ~/~ prefix.
+   You can also use keypad to execute the commands that needs many key with normal self-insert key or the ~comma~ (,) ~.~ ~/~ prefix.
    e.g.:
    You can execute ~C-c C-o~ by using ~c,o~ these three key.
 
