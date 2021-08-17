@@ -143,14 +143,18 @@ NO-CONVERT means not to convert the EXTERNAL-CHAR to prefix."
       (if (and (= (char-before) 32)
                (not (= (point) (line-beginning-position))))
           (progn
-            (minibuffer-keypad-mode)
+            (minibuffer-keypad-mode (if minibuffer-keypad-mode
+                                        -1
+                                      t))
             (call-interactively (key-binding (read-kbd-macro (char-to-string 127)))))
         (self-insert-command 1 32))
     (self-insert-command 1 32)
     (let ((char (read-char)))
       (if (= 32 char)
           (progn
-            (minibuffer-keypad-mode)
+            (minibuffer-keypad-mode (if minibuffer-keypad-mode
+                                        -1
+                                      t))
             (call-interactively (key-binding (read-kbd-macro (char-to-string 127)))))
         (if (and minibuffer-keypad-mode
                  (memq char '(44 46 47)))
@@ -168,7 +172,6 @@ NO-CONVERT means not to convert the EXTERNAL-CHAR to prefix."
             (< last-input-event 33)
             (> last-input-event 126))
         (progn
-          (minibuffer-keypad-mode -1)
           (let (command)
             (if (commandp (setq command
                                 (key-binding
@@ -176,8 +179,7 @@ NO-CONVERT means not to convert the EXTERNAL-CHAR to prefix."
                 (let ((last-command-event last-input-event))
                   (ignore-errors
                     (call-interactively command)))
-              (execute-kbd-macro (vector last-input-event))))
-          (minibuffer-keypad-mode t))
+              (execute-kbd-macro (vector last-input-event)))))
       (let ((last-command-event last-input-event))
         (call-interactively #'self-insert-command)))))
 

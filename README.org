@@ -15,12 +15,12 @@
    When you press SPC in twice time, you can open or close keypad mode.
 
    In the keypad mode, the character you input will be dotted with prefix. They can be ~C-~ , ~M-~ or ~C-M-~ .
-   You can use ~,~  (for ~C-~ ), ~.~ (for ~M-~ ) and ~/~ (for ~C-M-~ ) to change the current prefix if the prefix you input is not equal to current prefix.
+   You can use ~comma~ (,)  (for ~C-~ ), ~.~ (for ~M-~ ) and ~/~ (for ~C-M-~ ) to change the current prefix if the prefix you input is not equal to current prefix.
 
    You can also use keypad to execute the commands that needs many key with normal self-insert key or the ~,~ ~.~ ~/~ prefix.
    e.g.:
    You can execute ~C-c C-o~ by using ~c,o~ these three key.
 
-   When you press space while you're inputing the key in keypad. Then you can input ~,~ ~.~ ~/~ character, they'll not be convert to prefix.
+   When you press space while you're inputing the key in keypad. Then you can input ~comma~ (,) ~.~ ~/~ character, they'll not be convert to prefix.
 ** License
    GPL-3.0
