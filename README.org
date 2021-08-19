@@ -21,6 +21,7 @@
    e.g.:
    You can execute ~C-c C-o~ by using ~c,o~ these three key.
 
+   If you're in the state that there's no character for the prefix. Such as ~C-~ , at this time, the prefix keys will not be convert to prefix.
    When you press space while you're inputing the key in keypad. Then you can input ~comma~ (,) ~.~ ~/~ character, they'll not be convert to prefix.
 ** License
    GPL-3.0
