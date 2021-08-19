@@ -87,15 +87,17 @@ Enable the mode when ENABLE is non-nil."
 EXTERNAL-CHAR is the entrance for minibuffer-keypad mode.
 NO-CONVERT means not to convert the EXTERNAL-CHAR to prefix."
   (interactive)
-  (let ((key (when (and (null no-convert)
-                        (memq external-char '(44 46 47))
-                        (/= (minibuffer-keypad-mode--convert-prefix
-                             minibuffer-keypad-mode-prefix)
-                            external-char))
-               (setq-local minibuffer-keypad-mode-prefix
-                           (minibuffer-keypad-mode--convert-prefix external-char))
-               (setq external-char t)))
-        tmp command prefix-used-p)
+  (let* ((prefix-used-p nil)
+         (key (when (and (null no-convert)
+                         (memq external-char '(44 46 47))
+                         (/= (minibuffer-keypad-mode--convert-prefix
+                              minibuffer-keypad-mode-prefix)
+                             external-char))
+                (setq-local minibuffer-keypad-mode-prefix
+                            (minibuffer-keypad-mode--convert-prefix external-char))
+                (setq external-char t
+                      prefix-used-p t)))
+         tmp command)
     (unless (stringp key)
       (setq key (concat minibuffer-keypad-mode-prefix
                         (when (numberp external-char)
