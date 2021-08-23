@@ -1,10 +1,10 @@
-;;; minibuffer-keypad-mode.el --- A package allows you to avoid Ctrl,Meta in minibuffer -*- lexical-binding: t -*-
+;;; minibuffer-modifier-keys.el --- Use spacebar as a modifier key in the minibuffer -*- lexical-binding: t -*-
 
 ;; Author: SpringHan
 ;; Maintainer: SpringHan
 ;; Version: 1.0
 ;; Package-Requires: ((emacs "24.3"))
-;; Homepage: https://github.com/SpringHan/minibuffer-keypad-mode.git
+;; Homepage: https://github.com/SpringHan/minibuffer-modifier-keys.git
 ;; Keywords: tools
 
 
@@ -28,49 +28,52 @@
 
 ;; A package allows you to avoid Ctrl,Meta in minibuffer
 
+;; You can use (minibuffer-modifier-keys-setup t) to enable this package.
+;; Or use (minibuffer-modifier-keys-setup nil) to disable it.
+
 ;;; Code:
 
-(defcustom minibuffer-keypad-mode-map
+(defcustom minibuffer-modifier-keys-map
   (let ((map (make-sparse-keymap)))
-    (define-key map [remap self-insert-command] 'minibuffer-keypad-mode-self-insert)
-    (define-key map (kbd "SPC") 'minibuffer-keypad-mode-start-or-stop)
+    (define-key map [remap self-insert-command] 'minibuffer-modifier-keys-self-insert)
+    (define-key map (kbd "SPC") 'minibuffer-modifier-keys-start-or-stop)
     map)
   "The keymap for minibuffer-keypad state."
   :type 'keymap
-  :group 'minibuffer-keypad-mode)
+  :group 'minibuffer-modifier-keys)
 
-(defcustom minibuffer-keypad-mode-prefix "C-"
+(defcustom minibuffer-modifier-keys-prefix "C-"
   "The prefix for minibuffer-keypad."
   :type 'string
-  :group 'minibuffer-keypad-mode)
+  :group 'minibuffer-modifier-keys)
 
 ;;;###autoload
-(define-minor-mode minibuffer-keypad-mode
+(define-minor-mode minibuffer-modifier-keys
   "Minibuffer keypad mode."
-  nil nil minibuffer-keypad-mode-map)
+  nil nil minibuffer-modifier-keys-map)
 
-(defun minibuffer-keypad-mode-setup (enable)
-  "Setup or disable minibuffer-keypad-mode.
+(defun minibuffer-modifier-keys-setup (enable)
+  "Setup or disable minibuffer-modifier-keys.
 Enable the mode when ENABLE is non-nil."
   (if enable
       (add-hook 'minibuffer-setup-hook
                 (lambda ()
-                  (define-key (current-local-map) (kbd "SPC") #'minibuffer-keypad-mode-start-or-stop)))
+                  (define-key (current-local-map) (kbd "SPC") #'minibuffer-modifier-keys-start-or-stop)))
     (remove-hook 'minibuffer-setup-hook
                  (lambda ()
-                   (define-key (current-local-map) (kbd "SPC") #'minibuffer-keypad-mode-start-or-stop)))))
+                   (define-key (current-local-map) (kbd "SPC") #'minibuffer-modifier-keys-start-or-stop)))))
 
-(defun minibuffer-keypad-mode--index (ele list)
+(defun minibuffer-modifier-keys--index (ele list)
   "Get the index of ELE in LIST."
   (catch 'result
     (dotimes (i (length list))
       (when (equal (nth i list) ele)
         (throw 'result i)))))
 
-(defun minibuffer-keypad-mode--convert-prefix (prefix)
+(defun minibuffer-modifier-keys--convert-prefix (prefix)
   "Convert PREFIX from string to char or from char to string."
   (let* ((prefix-string '("C-" "M-" "C-M-"))
-         (prefix-char '(44 46 47))
+         (prefix-char '(?, ?. ?/))
          (from (if (stringp prefix)
                    prefix-string
                  prefix-char))
@@ -78,28 +81,28 @@ Enable the mode when ENABLE is non-nil."
                  prefix-char
                prefix-string))
          index)
-    (setq index (minibuffer-keypad-mode--index prefix from))
+    (setq index (minibuffer-modifier-keys--index prefix from))
     (when index
       (nth index to))))
 
-(defun minibuffer-keypad-mode-keypad (external-char &optional no-convert)
+(defun minibuffer-modifier-keys-keypad (external-char &optional no-convert)
   "Execute the keypad command.
 EXTERNAL-CHAR is the entrance for minibuffer-keypad mode.
 NO-CONVERT means not to convert the EXTERNAL-CHAR to prefix."
   (interactive)
   (let* ((prefix-used-p nil)
          (key (when (and (null no-convert)
-                         (memq external-char '(44 46 47))
-                         (/= (minibuffer-keypad-mode--convert-prefix
-                              minibuffer-keypad-mode-prefix)
+                         (memq external-char '(?, ?. ?/))
+                         (/= (minibuffer-modifier-keys--convert-prefix
+                              minibuffer-modifier-keys-prefix)
                              external-char))
-                (setq-local minibuffer-keypad-mode-prefix
-                            (minibuffer-keypad-mode--convert-prefix external-char))
+                (setq-local minibuffer-modifier-keys-prefix
+                            (minibuffer-modifier-keys--convert-prefix external-char))
                 (setq external-char t
                       prefix-used-p t)))
          tmp command)
     (unless (stringp key)
-      (setq key (concat minibuffer-keypad-mode-prefix
+      (setq key (concat minibuffer-modifier-keys-prefix
                         (when (numberp external-char)
                           (concat (char-to-string external-char) " ")))))
 
@@ -114,15 +117,15 @@ NO-CONVERT means not to convert the EXTERNAL-CHAR to prefix."
           (when (= tmp 59)
             (keyboard-quit))
           (setq key (concat key
-                            (cond ((and (= tmp 44)
+                            (cond ((and (= tmp ?,)
                                         (null prefix-used-p))
                                    (setq prefix-used-p t)
                                    "C-")
-                                  ((and (= tmp 46)
+                                  ((and (= tmp ?.)
                                         (null prefix-used-p))
                                    (setq prefix-used-p t)
                                    "M-")
-                                  ((and (= tmp 47)
+                                  ((and (= tmp ?/)
                                         (null prefix-used-p))
                                    (setq prefix-used-p t)
                                    "C-M-")
@@ -138,53 +141,52 @@ NO-CONVERT means not to convert the EXTERNAL-CHAR to prefix."
           (throw 'stop nil))))
     (call-interactively command)))
 
-(defun minibuffer-keypad-mode-start-or-stop ()
+(defun minibuffer-modifier-keys-start-or-stop ()
   "Start or stop the minibuffer-keypad mode."
   (interactive)
   (if current-input-method
       (if (and (= (char-before) 32)
                (not (= (point) (line-beginning-position))))
           (progn
-            (minibuffer-keypad-mode (if minibuffer-keypad-mode
-                                        -1
-                                      t))
+            (minibuffer-modifier-keys (if minibuffer-modifier-keys
+                                          -1
+                                        t))
             (call-interactively (key-binding (read-kbd-macro (char-to-string 127)))))
         (self-insert-command 1 32))
     (self-insert-command 1 32)
     (let ((char (read-char)))
       (if (= 32 char)
           (progn
-            (minibuffer-keypad-mode (if minibuffer-keypad-mode
-                                        -1
-                                      t))
+            (minibuffer-modifier-keys (if minibuffer-modifier-keys
+                                          -1
+                                        t))
             (call-interactively (key-binding (read-kbd-macro (char-to-string 127)))))
-        (if (and minibuffer-keypad-mode
-                 (memq char '(44 46 47)))
+        (if (and minibuffer-modifier-keys
+                 (memq char '(?, ?. ?/)))
             (progn
               (call-interactively (key-binding (read-kbd-macro (char-to-string 127))))
-              (minibuffer-keypad-mode-keypad char t))
-          (minibuffer-keypad-mode-self-insert))))))
+              (minibuffer-modifier-keys-keypad char t))
+          (minibuffer-modifier-keys-self-insert))))))
 
-(defun minibuffer-keypad-mode-self-insert ()
+(defun minibuffer-modifier-keys-self-insert ()
   "The function to insert the input key or execute the function."
   (interactive)
-  (if minibuffer-keypad-mode
-      (minibuffer-keypad-mode-keypad last-input-event)
+  (if minibuffer-modifier-keys
+      (minibuffer-modifier-keys-keypad last-input-event)
     (if (or (symbolp last-input-event)
             (< last-input-event 33)
             (> last-input-event 126))
-        (progn
-          (let (command)
-            (if (commandp (setq command
-                                (key-binding
-                                 (vector last-input-event))))
-                (let ((last-command-event last-input-event))
-                  (ignore-errors
-                    (call-interactively command)))
-              (execute-kbd-macro (vector last-input-event)))))
+        (let (command)
+          (if (commandp (setq command
+                              (key-binding
+                               (vector last-input-event))))
+              (let ((last-command-event last-input-event))
+                (ignore-errors
+                  (call-interactively command)))
+            (execute-kbd-macro (vector last-input-event))))
       (let ((last-command-event last-input-event))
         (call-interactively #'self-insert-command)))))
 
-(provide 'minibuffer-keypad-mode)
+(provide 'minibuffer-modifier-keys)
 
-;;; minibuffer-keypad-mode.el ends here
+;;; minibuffer-modifier-keys.el ends here

@@ -1,14 +1,14 @@
-* Minibuffer Keypad Mode
-  Minibuffer keypad mode is a package that allows you to avoid using Ctrl, Meta in Emacs minibuffers.
+* Minibuffer Modifier Keys
+  Minibuffer modifier keys is a package that allows you to avoid using Ctrl, Meta in Emacs minibuffers by using spacebar.
   [[file:./demo.gif]]
 ** Installation
    You can install it in the following way:
    #+begin_src emacs-lisp
      (use-package
-      minibuffer-keypad-mode
-      :load-path "/path/to/minibuffer-keypad-mode"
+      minibuffer-modifier-keys
+      :load-path "/path/to/minibuffer-modifier-keys"
       :init
-      (minibuffer-keypad-mode-setup t))
+      (minibuffer-modifier-keys-setup t))
    #+end_src
 ** Usage
    After opened the minibuffer, you can input as usual. Then when you press SPC with other characters, it will input a space and the character.
