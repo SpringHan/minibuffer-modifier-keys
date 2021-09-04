@@ -6,7 +6,6 @@
    #+begin_src emacs-lisp
      (use-package
       minibuffer-modifier-keys
-      :load-path "/path/to/minibuffer-modifier-keys"
       :init
       (minibuffer-modifier-keys-setup t))
    #+end_src
